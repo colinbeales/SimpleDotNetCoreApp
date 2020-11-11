@@ -52,10 +52,12 @@ stages:
          SimpleDotNetCoreApp.Selenium/bin/Release/**
         TargetFolder: '$(Pipeline.Workspace)/output'
 
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/output'
-        artifact: 'drop'
+#    - task: PublishPipelineArtifact@1
+#      inputs:
+#        targetPath: '$(Pipeline.Workspace)/output'
+#        artifact: 'drop'
+    - publish: '$(Pipeline.Workspace)/output'
+      artifact: drop
 
 - stage: Dev
   jobs:
@@ -69,11 +71,13 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: DownloadPipelineArtifact@1
-                inputs:
-                  buildType: 'current'
-                  artifactName: 'drop'
-                  targetPath: '$(System.ArtifactsDirectory)/drop'
+              - download: current
+                artifact: drop
+              #- task: DownloadPipelineArtifact@1
+              #  inputs:
+              #    buildType: 'current'
+              #    artifactName: 'drop'
+              #    targetPath: '$(System.ArtifactsDirectory)/drop'
               - task: AzureResourceManagerTemplateDeployment@3
                 inputs:
                   deploymentScope: 'Resource Group'
@@ -84,8 +88,8 @@ stages:
                   location: 'UK South'
 
                   templateLocation: 'Linked artifact'
-                  csmFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
-                  csmParametersFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
+                  csmFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
+                  csmParametersFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
                   overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
                   deploymentMode: 'Incremental'
               
@@ -95,7 +99,7 @@ stages:
                   azureSubscription: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
                   appType: 'webApp'
                   WebAppName: '$(WebAppName)'
-                  packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+                  packageForLinux: '$(Pipeline.Workspace))/**/*.zip'
 
 - stage: QA
   jobs:
