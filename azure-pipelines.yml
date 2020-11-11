@@ -80,7 +80,7 @@ stages:
         SourceFolder: '$(Build.SourcesDirectory)'
         Contents: |
          SimpleDotNetCoreApp.ARM/**
-         SimpleDotNetCoreApp.Selenium/**
+         SimpleDotNetCoreApp.Selenium/bin/Release/**
         TargetFolder: '$(Pipeline.Workspace)'
 
     - task: PublishPipelineArtifact@1
