@@ -99,7 +99,7 @@ stages:
                   azureSubscription: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
                   appType: 'webApp'
                   WebAppName: '$(WebAppName)'
-                  packageForLinux: '$(Pipeline.Workspace))/**/*.zip'
+                  packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
 
 - stage: QA
   jobs:
