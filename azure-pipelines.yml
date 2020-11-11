@@ -95,7 +95,7 @@ stages:
                   azureSubscription: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
                   appType: 'webAppLinux'
                   WebAppName: '$(WebAppName)'
-                  packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                  packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
                   RuntimeStack: 'DOTNETCORE|3.1'
                   StartupCommand: 'dotnet exec SimpleDotnetCoreApp.dll'
 #              - task: AzureWebApp@1
