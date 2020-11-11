@@ -21,33 +21,59 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: NuGetToolInstaller@1
+#    - task: NuGetToolInstaller@1
 
-    - task: NuGetCommand@2
-      inputs:
-        restoreSolution: '$(solution)'
+#    - task: NuGetCommand@2
+#      inputs:
+#        restoreSolution: '$(solution)'
 
-    - task: VSBuild@1
-      inputs:
-        solution: '$(solution)'
-        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+#    - task: VSBuild@1
+#      inputs:
+#        solution: '$(solution)'
+#        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+#        platform: '$(buildPlatform)'
+#        configuration: '$(buildConfiguration)'
 
 #- task: VSTest@2
 #  inputs:
 #    platform: '$(buildPlatform)'
 #    configuration: '$(buildConfiguration)'
 
-    - task: VSTest@2
-      inputs:
-        testSelector: 'testAssemblies'
-        testAssemblyVer2: |
-          **\*SimpleDotNetCoreApp.Tests*.dll
-          !**\*TestAdapter.dll
-          !**\obj\**
-        searchFolder: '$(System.DefaultWorkingDirectory)'
+#    - task: VSTest@2
+#      inputs:
+#        testSelector: 'testAssemblies'
+#        testAssemblyVer2: |
+#          **\*SimpleDotNetCoreApp.Tests*.dll
+#          !**\*TestAdapter.dll
+#          !**\obj\**
+#        searchFolder: '$(System.DefaultWorkingDirectory)'
 
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        projects: '**/*.csproj'
+        arguments: '--configuration $(BuildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: '**/*[Tt]ests/*.csproj'
+        arguments: '--configuration $(BuildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(Pipeline.Workspace)'
+        zipAfterPublish: True
+  
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(Pipeline.Workspace)'
       inputs:
