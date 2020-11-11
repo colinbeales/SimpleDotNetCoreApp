@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "websiteName": {
+            "type": "string"
+        },
+        "containerImageName": {
+            "type": "string"
+        },
+        "appServicePlanInstances": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "appServicePlanSku": {
+            "type": "string",
+            "defaultValue": "S1",
+            "minLength": 1
+        }
+    },
+    "variables": {
+        "appServicePlanName": "[concat(parameters('websiteName'),'-plan')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "kind": "linux",
+            "name": "[variables('appServicePlanName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "numberOfWorkers": "[parameters('appServicePlanInstances')]",
+                "reserved": true
+            },
+            "dependsOn": [],
+            "sku": {
+                "name": "[parameters('appServicePlanSku')]"
+            }
+        },
+        {
+            "comments": "WebApp",
+            "type": "Microsoft.Web/sites",
+            "kind": "app,linux,container",
+            "apiVersion": "2016-08-01",
+            "name": "[parameters('websiteName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[parameters('websiteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+                "siteConfig": {
+                    "DOCKER_CUSTOM_IMAGE_NAME": "[parameters('containerImageName')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+            ]
+        }
+    ]
+}
