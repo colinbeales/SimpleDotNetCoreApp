@@ -97,10 +97,83 @@ stages:
                   WebAppName: '$(WebAppName)'
                   packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
-#              - task: AzureWebApp@1
-#                inputs:
-#                  azureSubscription: 'Colin Beales MSDN (7e006c82-4480-45f0-93c2-502b8f4f757a)'
-#                  appType: 'webApp'
-#                  appName: '$(WebAppName)'
-#                  package: '$(System.ArtifactsDirectory)/**/*.zip'
-#                  deploymentMethod: 'auto'
+- stage: QA
+  jobs:
+    - deployment: DeployWebsite
+      pool:
+        vmImage: 'ubuntu-latest'
+      variables:
+        WebAppName: 'ColinsYAMLDemoQA'
+      environment: QA
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: DownloadPipelineArtifact@1
+                inputs:
+                  buildType: 'current'
+                  artifactName: 'drop'
+                  targetPath: '$(System.ArtifactsDirectory)/drop'
+              - task: AzureResourceManagerTemplateDeployment@3
+                inputs:
+                  deploymentScope: 'Resource Group'
+                  azureResourceManagerConnection: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
+                  subscriptionId: '7e006c82-4480-45f0-93c2-502b8f4f757a'
+                  action: 'Create Or Update Resource Group'
+                  resourceGroupName: '$(DemoResourceGroupName)'
+                  location: 'UK South'
+
+                  templateLocation: 'Linked artifact'
+                  csmFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
+                  csmParametersFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
+                  overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
+                  deploymentMode: 'Incremental'
+              
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  azureSubscription: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
+                  appType: 'webApp'
+                  WebAppName: '$(WebAppName)'
+                  packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+
+- stage: Prod
+  jobs:
+    - deployment: DeployWebsite
+      pool:
+        vmImage: 'ubuntu-latest'
+      variables:
+        WebAppName: 'ColinsYAMLDemoProd'
+      environment: Prod
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: DownloadPipelineArtifact@1
+                inputs:
+                  buildType: 'current'
+                  artifactName: 'drop'
+                  targetPath: '$(System.ArtifactsDirectory)/drop'
+              - task: AzureResourceManagerTemplateDeployment@3
+                inputs:
+                  deploymentScope: 'Resource Group'
+                  azureResourceManagerConnection: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
+                  subscriptionId: '7e006c82-4480-45f0-93c2-502b8f4f757a'
+                  action: 'Create Or Update Resource Group'
+                  resourceGroupName: '$(DemoResourceGroupName)'
+                  location: 'UK South'
+
+                  templateLocation: 'Linked artifact'
+                  csmFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
+                  csmParametersFile: '$(System.ArtifactsDirectory)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
+                  overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
+                  deploymentMode: 'Incremental'
+              
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  azureSubscription: 'Colin Beales MSDN(7e006c82-4480-45f0-93c2-502b8f4f757a)'
+                  appType: 'webApp'
+                  WebAppName: '$(WebAppName)'
+                  packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+
