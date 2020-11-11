@@ -71,7 +71,7 @@ stages:
       inputs:
         command: publish
         publishWebProjects: True
-        arguments: '--configuration $(BuildConfiguration) --output $(Pipeline.Workspace)'
+        arguments: '--configuration $(BuildConfiguration) --output $(Pipeline.Workspace)/output'
         zipAfterPublish: True
   
     - task: CopyFiles@2
@@ -81,9 +81,9 @@ stages:
         Contents: |
          SimpleDotNetCoreApp.ARM/**
          SimpleDotNetCoreApp.Selenium/bin/Release/**
-        TargetFolder: '$(Pipeline.Workspace)'
+        TargetFolder: '$(Pipeline.Workspace)/output'
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
+        targetPath: '$(Pipeline.Workspace)/output'
         artifact: 'drop'
