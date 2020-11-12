@@ -10,7 +10,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- download: 483
+- download: current
   artifact: drop
 
 - script: echo Hello, world!
