@@ -31,7 +31,7 @@ namespace SimpleDotNetCoreApp.Selenium
                 string releaseEnvironmentAppBaseURL = Environment.GetEnvironmentVariable("WebAppName");
                 if (releaseEnvironmentAppBaseURL != null)
                 {
-                    _webAppBaseURL = "https://" + releaseEnvironmentAppBaseURL + ".azurewebsites.net";
+                    _webAppBaseURL = "https://" + releaseEnvironmentAppBaseURL + ".azurewebsites.net/";
                     Console.WriteLine("WebApp Base URL found: " + _webAppBaseURL);
                 }
                 else
