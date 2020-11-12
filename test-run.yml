@@ -19,11 +19,9 @@ steps:
     artifactName: 'drop'
     targetPath: '$(Pipeline.Workspace)'
 
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-
+- task: VSTest@2
+  inputs:
+    testSelector: 'testRun'
+    searchFolder: '$(Pipeline.Workspace)\drop\SimpleDotNetCoreApp.Selenium\bin\Release\netcoreapp3.1'
+    vsTestVersion: '16.0'
+    overrideTestrunParameters: '-browser chrome'
