@@ -10,8 +10,16 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- download: TestPlansDemo
-  artifact: drop
+- download:
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'specific'
+    project: '34697803-e92f-4c40-bdad-47390909183b'
+    definition: '483'
+    buildVersionToDownload: 'latest'
+    artifactName: 'drop'
+    targetPath: '$(Pipeline.Workspace)'
 
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
