@@ -9,6 +9,8 @@ trigger: none
 pool:
    name: Default
 
+variables: { WebAppName: 'ColinsYAMLDemoDev'}
+
 steps:
 - task: DownloadPipelineArtifact@2
   inputs:
