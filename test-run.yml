@@ -25,6 +25,6 @@ steps:
     testPlan: '12525'
     testSuite: '12526'
     testConfiguration: '495'
-    searchFolder: '$(Pipeline.Workspace)\drop\SimpleDotNetCoreApp.Selenium\bin\Release\netcoreapp3.1'
+    searchFolder: '$(Pipeline.Workspace)\SimpleDotNetCoreApp.Selenium\bin\Release\netcoreapp3.1'
     uiTests: true
     vsTestVersion: '16.0'
