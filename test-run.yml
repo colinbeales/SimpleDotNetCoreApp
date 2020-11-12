@@ -10,7 +10,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- download: current
+- download: TestPlansDemo
   artifact: drop
 
 - script: echo Hello, world!
