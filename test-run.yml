@@ -23,7 +23,7 @@ steps:
   inputs:
     testSelector: 'testPlan'
     testPlan: '12525'
-    testSuite: '12526'
+    testSuite: '12527'
     testConfiguration: '495'
     searchFolder: '$(Pipeline.Workspace)\SimpleDotNetCoreApp.Selenium\bin\Release\netcoreapp3.1'
     uiTests: true
