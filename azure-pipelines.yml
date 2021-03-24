@@ -3,8 +3,8 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- master
+trigger: none
+#- master
 
 variables:
   buildConfiguration: 'Release'
@@ -27,14 +27,12 @@ stages:
       inputs:
         projects: '**/*.csproj'
         arguments: '--configuration $(BuildConfiguration)'
-
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
         command: test
         projects: '**/*[Tt]ests/*.csproj'
         arguments: '--configuration $(BuildConfiguration)'
-
     - task: DotNetCoreCLI@2
       displayName: Publish
       inputs:
@@ -42,7 +40,6 @@ stages:
         publishWebProjects: True
         arguments: '--configuration $(BuildConfiguration) --output $(Pipeline.Workspace)/output'
         zipAfterPublish: True
-  
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(Pipeline.Workspace)'
       inputs:
@@ -51,11 +48,6 @@ stages:
          SimpleDotNetCoreApp.ARM/**
          SimpleDotNetCoreApp.Selenium/bin/Release/**
         TargetFolder: '$(Pipeline.Workspace)/output'
-
-#    - task: PublishPipelineArtifact@1
-#      inputs:
-#        targetPath: '$(Pipeline.Workspace)/output'
-#        artifact: 'drop'
     - publish: '$(Pipeline.Workspace)/output'
       artifact: drop
 
@@ -81,13 +73,11 @@ stages:
                   action: 'Create Or Update Resource Group'
                   resourceGroupName: '$(DemoResourceGroupName)'
                   location: 'UK South'
-
                   templateLocation: 'Linked artifact'
                   csmFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
                   csmParametersFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
                   overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
                   deploymentMode: 'Incremental'
-              
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
@@ -118,13 +108,11 @@ stages:
                   action: 'Create Or Update Resource Group'
                   resourceGroupName: '$(DemoResourceGroupName)'
                   location: 'UK South'
-
                   templateLocation: 'Linked artifact'
                   csmFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
                   csmParametersFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
                   overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
                   deploymentMode: 'Incremental'
-              
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
@@ -132,7 +120,10 @@ stages:
                   appType: 'webApp'
                   WebAppName: '$(WebAppName)'
                   packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
-
+    - job: TestWebsite
+      dependsOn: DeployWebsite
+      steps:
+      - script: echo hello from the Release build
 - stage: Prod
   jobs:
     - deployment: DeployWebsite
@@ -155,13 +146,11 @@ stages:
                   action: 'Create Or Update Resource Group'
                   resourceGroupName: '$(DemoResourceGroupName)'
                   location: 'UK South'
-
                   templateLocation: 'Linked artifact'
                   csmFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.json'
                   csmParametersFile: '$(Pipeline.Workspace)/drop/SimpleDotNetCoreApp.ARM/WebSite.parameters.json'
                   overrideParameters: '-hostingPlanName "webapphostingplan" -webSiteName $(WebAppName) -skuName "F1" -skuCapacity 1'
                   deploymentMode: 'Incremental'
-              
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'

@@ -1,0 +1,32 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+#- master
+
+pool:
+   name: Default
+
+variables: { WebAppName: 'ColinsYAMLDemoDev'}
+
+steps:
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'specific'
+    project: '34697803-e92f-4c40-bdad-47390909183b'
+    definition: '483'
+    buildVersionToDownload: 'latest'
+    artifactName: 'drop'
+    targetPath: '$(Pipeline.Workspace)'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testPlan'
+    testPlan: '12525'
+    testSuite: '12527'
+    testConfiguration: '495'
+    searchFolder: '$(Pipeline.Workspace)\SimpleDotNetCoreApp.Selenium\bin\Release\netcoreapp3.1'
+    uiTests: true
+    vsTestVersion: '16.0'
